@@ -82,6 +82,12 @@ Happy birthday, Teteh.
 
     vaultDigitsCount: 4,
     secretTapsNeeded: 5,
+    youtubeId: "PASTE_YOUR_YOUTUBE_ID_HERE",
+    otherWebs: [
+      { title: "10 Monthiversary!", url: "https://rapais.github.io/mobileweb10m/" },
+      { title: "Semprotulations!", url: "https://rapais.github.io/sempro_tetehh/" },
+    ],
+
   };
 
   const DEFAULT_STATE = {
@@ -292,6 +298,8 @@ Happy birthday, Teteh.
     else if (state.route === "levels") renderLevels();
     else if (state.route === "notes") renderNotes();
     else if (state.route === "settings") renderSettings();
+    else if (state.route === "webs") renderWebs();
+
     else renderHome();
   }
 
@@ -306,7 +314,7 @@ Happy birthday, Teteh.
         <div class="spacer"></div>
         <div class="row">
           <button class="btn primary" id="startBtn" type="button">Start Adventure</button>
-          <button class="btn ghost" id="levelsBtn" type="button">Other Web</button>
+          <button class="btn ghost" id="websBtn" type="button">Other Web</button>
         </div>
         <div class="spacer"></div>
         <button class="btn full" id="secretStar" type="button">✦</button>
@@ -314,21 +322,38 @@ Happy birthday, Teteh.
 
       <div class="spacer"></div>
 
-      <section class="card">
+            <section class="card">
         <div class="game-top">
           <div class="kpi"><span>Progress</span><strong>${progressText()}</strong></div>
           <div class="kpi"><span>Notes</span><strong>${state.progress.notesUnlocked}/${CONFIG.loveNotes.length}</strong></div>
         </div>
+
         <div class="spacer"></div>
         <p class="p">Tip: level bakal ke randomize tiap saat, supaya ga gampang bosen!</p>
       </section>
+<div class="spacer"></div>
+      <section class="card">
+      
+
+        <div class="video-card">
+          <div class="video-wrap">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/${escapeAttr(CONFIG.youtubeId)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1"
+              title="Birthday video"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
     `;
 
     $("#startBtn").addEventListener("click", () => {
       unlockAudioOnce(); playSfx("tap"); navigate("levels");
     });
-    $("#levelsBtn").addEventListener("click", () => {
-      unlockAudioOnce(); playSfx("tap"); navigate("levels");
+    $("#websBtn").addEventListener("click", () => {
+      unlockAudioOnce(); playSfx("tap"); navigate("webs");
     });
     $("#secretStar").addEventListener("click", () => {
       unlockAudioOnce(); playSfx("tap"); handleSecretTap();
@@ -368,21 +393,24 @@ Happy birthday, Teteh.
   }
 
   function renderNotes() {
-    const n = state.progress.notesUnlocked;
-    const secret = state.progress.secretUnlocked;
+  const n = state.progress.notesUnlocked;
+  const secret = state.progress.secretUnlocked;
 
-    const secretCard = `
-      <section class="card" style="margin-bottom:12px; ${secret ? "" : "opacity:0.65"}">
-        <div class="game-top">
-          <div class="kpi"><span>Secret</span><strong>✦</strong></div>
-          <div class="kpi"><span>Status</span><strong>${secret ? "Unlocked" : "Locked"}</strong></div>
-        </div>
-        <div class="spacer"></div>
-        <p class="p">${secret ? "You found it. Teteh, you’re my favorite kind of magic." : "Try tapping the star on Home…"}</p>
-      </section>
-    `;
+  const secretCard = `
+    <section class="card" style="margin-bottom:12px; ${secret ? "" : "opacity:0.65"}">
+      <div class="game-top">
+        <div class="kpi"><span>Secret</span><strong>✦</strong></div>
+        <div class="kpi"><span>Status</span><strong>${secret ? "Unlocked" : "Locked"}</strong></div>
+      </div>
+      <div class="spacer"></div>
+      <p class="p">
+        ${secret ? "You found it. Teteh, you’re my favorite kind of magic." : "Try tapping the star on Home…"}
+      </p>
+    </section>
+  `;
 
-    const items = CONFIG.loveNotes.map((txt, i) => {
+  const items = CONFIG.loveNotes
+    .map((txt, i) => {
       const unlocked = i < n;
       return `
         <section class="card" style="margin-bottom:12px; ${unlocked ? "" : "opacity:0.65"}">
@@ -391,21 +419,25 @@ Happy birthday, Teteh.
             <div class="kpi"><span>Status</span><strong>${unlocked ? "Unlocked" : "Locked"}</strong></div>
           </div>
           <div class="spacer"></div>
-          <p class="p" style="${unlocked ? "color: rgba(27,31,29,0.85)" : ""}">${unlocked ? escapeHtml(txt) : "Locked…"}</p>
+          <p class="p" style="${unlocked ? "color: rgba(27,31,29,0.85)" : ""}">
+            ${unlocked ? escapeHtml(txt) : `Complete Level ${i + 1} to reveal ✦`}
+          </p>
         </section>
       `;
-    }).join("");
+    })
+    .join("");
 
-    app.innerHTML = `
-      <section>
-        <div class="h1" style="margin:0 0 10px 0;">Love Notes</div>
-        <p class="p">Collected as you complete levels.</p>
-        <div class="spacer"></div>
-        ${secretCard}
-        ${items}
-      </section>
-    `;
-  }
+  app.innerHTML = `
+    <section>
+      <div class="h1" style="margin:0 0 10px 0;">Love Notes</div>
+      <p class="p">Collected as you complete levels.</p>
+      <div class="spacer"></div>
+      ${secretCard}
+      ${items}
+    </section>
+  `;
+}
+
 
   function renderSettings() {
     app.innerHTML = `
@@ -474,6 +506,45 @@ Happy birthday, Teteh.
     if (levelId === "L7") return renderL7(idx);
     if (levelId === "L8") return renderL8(idx); // bonus
   }
+
+    function renderWebs() {
+    const list = (CONFIG.otherWebs || []).map((w) => `
+      <section class="card" style="margin-bottom:12px;">
+        <div class="game-top">
+          <div class="kpi"><span>Website</span><strong>${escapeHtml(w.title)}</strong></div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn primary full openWeb" data-url="${escapeAttr(w.url)}" type="button">
+          Open
+        </button>
+      </section>
+    `).join("");
+
+    app.innerHTML = `
+      <section>
+        <div class="h1" style="margin:0 0 10px 0;">Other Webs</div>
+        <p class="p">Little pages Baba made for Teteh ✦</p>
+        <div class="spacer"></div>
+        ${list || `<section class="card"><p class="p">Add links in CONFIG.otherWebs</p></section>`}
+        <div class="spacer"></div>
+        <button class="btn full" id="backHome" type="button">← Back Home</button>
+      </section>
+    `;
+
+    $$(".openWeb").forEach((b) => {
+      b.addEventListener("click", () => {
+        unlockAudioOnce();
+        playSfx("tap");
+        window.open(b.dataset.url, "_blank", "noopener,noreferrer");
+      });
+    });
+
+    $("#backHome").addEventListener("click", () => {
+      playSfx("tap");
+      navigate("home");
+    });
+  }
+
 
   // ===== Level 1: Tap Catch =====
   function renderL1(levelIndex0) {

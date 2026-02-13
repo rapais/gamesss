@@ -1,52 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
     <meta name="theme-color" content="#848b79" />
-    <title>Monster Academy: Esther's Quest</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Birthday Quest</title>
+    <link rel="stylesheet" href="./styles.css" />
   </head>
+
   <body>
-    <div id="app" class="app handed-right" aria-live="polite">
-      <header class="topbar">
-        <h1>Monster Academy</h1>
-        <button id="menuBtn" class="icon-btn" aria-label="Open menu">☰</button>
-      </header>
+    <div class="bg-dots" aria-hidden="true"></div>
 
-      <main id="screenRoot" tabindex="-1"></main>
-
-      <nav class="bottom-nav" aria-label="Main navigation">
-        <button data-nav="intro" class="nav-btn active">Home</button>
-        <button data-nav="levels" class="nav-btn">Levels</button>
-        <button data-nav="notes" class="nav-btn">Notes</button>
-        <button data-nav="settings" class="nav-btn">Settings</button>
-      </nav>
-
-      <div class="floating-particles" aria-hidden="true"></div>
-    </div>
-
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-    <div id="modalBackdrop" class="modal-backdrop hidden" aria-hidden="true">
-      <div
-        id="modal"
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modalTitle"
-        aria-describedby="modalContent"
-      >
-        <h2 id="modalTitle"></h2>
-        <div id="modalContent"></div>
-        <button id="modalCloseBtn" class="primary-btn">Close</button>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-dot" aria-hidden="true"></div>
+        <div class="brand-text">
+          <div class="brand-title">Birthday Quest</div>
+          <div class="brand-subtitle">for Esther ✦ from Baba</div>
+        </div>
       </div>
-    </div>
 
-    <template id="badgeTemplate">
-      <span class="badge" aria-label="Completed">✓</span>
-    </template>
+      <button id="soundBtn" class="chip" type="button" aria-label="Toggle sound">
+        🔈 Sound: On
+      </button>
+    </header>
 
-    <script src="app.js"></script>
+    <main id="app" class="app" role="main"></main>
+
+    <nav class="bottom-nav" aria-label="Primary">
+      <button class="nav-btn" data-nav="home" type="button">
+        <span class="nav-ic" aria-hidden="true">🏠</span>
+        <span class="nav-tx">Home</span>
+      </button>
+      <button class="nav-btn" data-nav="levels" type="button">
+        <span class="nav-ic" aria-hidden="true">🎮</span>
+        <span class="nav-tx">Levels</span>
+      </button>
+      <button class="nav-btn" data-nav="notes" type="button">
+        <span class="nav-ic" aria-hidden="true">💌</span>
+        <span class="nav-tx">Notes</span>
+      </button>
+      <button class="nav-btn" data-nav="settings" type="button">
+        <span class="nav-ic" aria-hidden="true">⚙️</span>
+        <span class="nav-tx">Settings</span>
+      </button>
+    </nav>
+
+    <div id="toasts" class="toasts" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="./app.js"></script>
   </body>
 </html>

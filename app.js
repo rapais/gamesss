@@ -82,7 +82,7 @@ Happy birthday, Teteh.
 
     vaultDigitsCount: 4,
     secretTapsNeeded: 5,
-    youtubeId: "PASTE_YOUR_YOUTUBE_ID_HERE",
+    youtubeId: "I81fo2FclXs",
     otherWebs: [
       { title: "10 Monthiversary!", url: "https://rapais.github.io/mobileweb10m/" },
       { title: "Semprotulations!", url: "https://rapais.github.io/sempro_tetehh/" },

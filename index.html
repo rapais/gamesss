@@ -8,7 +8,7 @@
     />
     <meta name="theme-color" content="#848b79" />
     <title>Birthday Quest</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=1" />
   </head>
 
   <body>
@@ -18,8 +18,8 @@
       <div class="brand">
         <div class="brand-dot" aria-hidden="true"></div>
         <div class="brand-text">
-          <div class="brand-title">Birthday Quest</div>
-          <div class="brand-subtitle">for Esther ✦ from Baba</div>
+          <div class="brand-title">Birthday Quest!?</div>
+          <div class="brand-subtitle">for Teteh ✦ from Baba</div>
         </div>
       </div>
 
@@ -31,7 +31,7 @@
     <main id="app" class="app" role="main"></main>
 
     <nav class="bottom-nav" aria-label="Primary">
-      <button class="nav-btn" data-nav="home" type="button">
+      <button class="nav-btn" data-nav="home" type="button" aria-current="page">
         <span class="nav-ic" aria-hidden="true">🏠</span>
         <span class="nav-tx">Home</span>
       </button>
@@ -51,6 +51,7 @@
 
     <div id="toasts" class="toasts" aria-live="polite" aria-atomic="true"></div>
 
-    <script src="./app.js"></script>
+    <!-- cache-bust while developing -->
+    <script src="./app.js?v=1"></script>
   </body>
 </html>

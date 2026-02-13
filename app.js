@@ -1,26 +1,16 @@
-/*
-
-DEPLOY (GitHub Pages)
-- Repo Settings -> Pages -> Deploy from branch -> main / root
-- Ensure index.html is in repo root.
-
-ASSETS
-- Put your photos in /assets/img/ (optional).
-- For Level 6 polaroids, replace image paths in CONFIG.foodGallery.
-- For SFX, optionally add:
-  /assets/sfx/tap.mp3
-  /assets/sfx/success.mp3
-  /assets/sfx/open.mp3
-  /assets/sfx/unlock.mp3
-If missing, app still works (silent).
-
+/* Birthday Quest - Vanilla SPA (GitHub Pages friendly)
+   - Portrait, touch friendly
+   - Bottom nav fixed
+   - Toasts auto-dismiss 3s
+   - Randomized replay variants
+   - Level 3: 5x5 sliding puzzle
+   - Level 8: Bonus spot-the-difference 675
 */
 
 (() => {
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
-  const STORAGE_KEY = "bdayQuest_v2";
+  const STORAGE_KEY = "bdayQuest_v3";
 
   const CONFIG = {
     primary: "#848b79",
@@ -29,60 +19,17 @@ If missing, app still works (silent).
     callYou: "Baba",
     callHer: "Teteh",
 
-    // Level variants: 2–3 per level, re-randomize every time a level is opened
     tapCatch: [
-      { target: "✦", decoys: ["✿", "✧", "❋"], goal: 5, hint: "Tap the star ✦ five times." },
-      { target: "🍀", decoys: ["🌿", "🌱", "🍃"], goal: 5, hint: "Collect the lucky 🍀." },
-      { target: "🫧", decoys: ["💧", "❄️", "🟦"], goal: 5, hint: "Pop the bubbles 🫧." },
+      { target: "✦", decoys: ["✿", "✧", "❋"], goal: 6, hint: "Tap the star ✦ six times." },
+      { target: "🍀", decoys: ["🌿", "🌱", "🍃"], goal: 6, hint: "Collect the lucky 🍀 six times." },
+      { target: "🫧", decoys: ["💧", "❄️", "🟦"], goal: 6, hint: "Pop bubbles 🫧 six times." },
     ],
 
-    memoryMatchSets: [
-      // inline SVG strings; replace these later with Piplup etc.
-  [
-    svgIcon("spark", CONFIG.primary),
-    svgIcon("leaf", CONFIG.primary),
-    svgIcon("moon", CONFIG.primary),
-    svgIcon("puff", CONFIG.primary),
-    svgIcon("wand", CONFIG.primary),
-    svgIcon("heart", CONFIG.primary),
-    svgIcon("star", CONFIG.primary),
-    svgIcon("potion", CONFIG.primary),
-  ],
-  [
-    svgIcon("gem", CONFIG.primary),
-    svgIcon("book", CONFIG.primary),
-    svgIcon("cloud", CONFIG.primary),
-    svgIcon("feather", CONFIG.primary),
-    svgIcon("bell", CONFIG.primary),
-    svgIcon("sun", CONFIG.primary),
-    svgIcon("orb", CONFIG.primary),
-    svgIcon("shield", CONFIG.primary),
-  ],
-  [
-    svgIcon("fish", CONFIG.primary),
-    svgIcon("cup", CONFIG.primary),
-    svgIcon("spark", CONFIG.primary),
-    svgIcon("leaf", CONFIG.primary),
-    svgIcon("moon", CONFIG.primary),
-    svgIcon("puff", CONFIG.primary),
-    svgIcon("wand", CONFIG.primary),
-    svgIcon("heart", CONFIG.primary),
-  ],
-],
-
-    potionOrders: [
-      {
-        hint: "Warmth first, then sweetness, then a little sparkle.",
-        items: ["Warmth", "Sweet", "Sparkle"],
-      },
-      {
-        hint: "Start soft, then brave, then kind.",
-        items: ["Soft", "Brave", "Kind"],
-      },
-      {
-        hint: "The Huffle recipe: loyalty → patience → joy.",
-        items: ["Loyalty", "Patience", "Joy"],
-      },
+    // SVG-based icons (easy to swap later)
+    memoryMatchKinds: [
+      ["spark", "leaf", "moon", "puff", "wand", "heart", "star", "potion"],
+      ["gem", "book", "cloud", "feather", "bell", "sun", "orb", "shield"],
+      ["fish", "cup", "spark", "leaf", "moon", "puff", "wand", "heart"],
     ],
 
     tracePaths: [
@@ -91,95 +38,66 @@ If missing, app still works (silent).
       { hint: "Trace the loop.", path: "M 80 160 C 80 60, 260 60, 260 160 C 260 260, 80 260, 80 160 Z" },
     ],
 
-    // General word scramble (not couple-specific)
+    // General word scramble variants
     scrambles: [
-      { answer: "COZY MAGIC", hint: "A phrase about warmth and wonder." },
-      { answer: "KIND HEART", hint: "A phrase about being gentle." },
-      { answer: "SOFT JOY", hint: "A phrase about quiet happiness." },
-      { answer: "BRIGHT DAY", hint: "A phrase about good vibes." },
-      { answer: "HAPPY MOMENT", hint: "A phrase about memories." },
+      { answer: "CANAI", hint: "A Food, that we eat together for the first time until midnight." },
+      { answer: "TIRAMISU", hint: "A dessert we shared together." },
+      { answer: "I LOVE YOU", hint: "A phrase I want to hear from you everyday." },
+      { answer: "SUBANG PARADE", hint: "A place we visited the most together." },
+      { answer: "PIPLUP", hint: "Our favorite Pokémon." },
     ],
 
+    // Level 6 polaroids (you replace images)
     foodGallery: [
-      {
-        key: "canai",
-        label: "Canai",
-        title: "Canai Moment",
-        caption: "Replace this caption 🧡",
-        img: "./assets/img/canai.jpg",
-      },
-      {
-        key: "pizza",
-        label: "Pizza",
-        title: "Pizza Date",
-        caption: "Replace this caption 🧡",
-        img: "./assets/img/pizza.jpg",
-      },
-      {
-        key: "indomie",
-        label: "Indomie",
-        title: "Indomie Core",
-        caption: "Replace this caption 🧡",
-        img: "./assets/img/indomie.jpg",
-      },
-      {
-        key: "tiramisu",
-        label: "Tiramisu",
-        title: "Tiramisu Sweet",
-        caption: "Replace this caption 🧡",
-        img: "./assets/img/tiramisu.jpg",
-      },
+      { key: "canai", label: "Canai", title: "Canai Moment", caption: "Pertama kali makan berdua sampe tengah malem", img: "./assets/img/canai.jpeg" },
+      { key: "pizza", label: "Pizza", title: "Pizza Date", caption: "Best Moment with my favorite person", img: "./assets/img/pizza.jpeg" },
+      { key: "indomie", label: "Indomie", title: "Indomie Core", caption: "Kamu paling jago sih bikin mie miso, ini favorit aku", img: "./assets/img/indomie.jpeg" },
+      { key: "tiramisu", label: "Tiramisu", title: "Tiramisu!!!", caption: "Masih menjadi salah satu tiramisu yang memorable", img: "./assets/img/tiramisu.jpeg" },
     ],
 
-    // Love notes (collected after each level completion)
     loveNotes: [
-      `Teteh ${"Esther"}, you make ordinary days feel safe.`,
-      `Huffle energy: loyal, warm, quietly unstoppable. That’s you.`,
-      `If I could “save” one thing forever, it’s your laugh.`,
-      `Even when life is messy, you keep choosing kindness. I notice.`,
-      `You make “cozy” feel like a real place. I like living there with you.`,
-      `Food tastes better when it becomes a memory with you.`,
-      `Okay… final door time. Baba is proud of you, Teteh.`,
+      "Teteh, you’re the coziest part of my day. I hope this little quest brings you some smiles",
+      "Huffle energy: loyal, warm, fun, genius, quietly unstoppable. That’s you!!!!!",
+      "Kamu kuat, kamu keren, aku yakin kamu bisa ngadepin apa aja. Aku selalu di sini buat kamu, Teteh",
+      "Even when life is messy, you keep choosing kindness. I adore you for that (and I hope you can be kinder to yourself too)",
+      "You make “cozy” feel like a real place. I like living life with you",
+      "Food tastes much much better when it becomes a memory with you",
+      "Final door time. Baba is proud of you, Teteh. You’ve unlocked all the levels, and that’s amazing. But remember, you don’t need to “complete” anything to be loved by me",
+      "Eyyy You unlocked the bonus level! You’re my favorite kind of magic.",
     ],
 
     finalLetter: `
-Hi Esther (Teteh),
+Hi Teteh,
 
-This little site is my way of saying:
-I love you in the calm days, in the chaotic days, and in the in-between days.
+This might not be much. It's a little site of my way of saying:
 
-Thank you for being you.
-Thank you for choosing me.
+I love you in the calm days, the chaotic days, and the in-between days. 
+Whatever it is, I hope I can be your cozy corner, your safe place, your home. 
+
+I hope we can keep making sweet memories together, and be a person that you can be proud of
+
 Happy birthday, Teteh.
-
-— Baba
+— Love, Baba
 `.trim(),
 
-    // Vault: code is generated per session (playthrough) and stored for consistency
     vaultDigitsCount: 4,
-
-    // Secret
     secretTapsNeeded: 5,
   };
-
-  function CONFIG_PRIMARY() {
-    return getState().settings.primary || CONFIG.primary;
-  }
 
   const DEFAULT_STATE = {
     route: "home",
     settings: {
       soundEnabled: true,
       primary: CONFIG.primary,
-      handedness: "right", // right | left
+      handedness: "right",
     },
     progress: {
-      completed: {}, // levelId => true
+      completed: {}, // levelId -> true
       notesUnlocked: 0,
       secretUnlocked: false,
       secretTapCount: 0,
-      vaultCode: null, // string
-      digitsEarned: {}, // levelId => digit
+      vaultCode: null,
+      digitsEarned: {}, // levelId -> digit
     },
   };
 
@@ -187,8 +105,7 @@ Happy birthday, Teteh.
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return structuredClone(DEFAULT_STATE);
-      const parsed = JSON.parse(raw);
-      return deepMerge(structuredClone(DEFAULT_STATE), parsed);
+      return deepMerge(structuredClone(DEFAULT_STATE), JSON.parse(raw));
     } catch {
       return structuredClone(DEFAULT_STATE);
     }
@@ -198,41 +115,39 @@ Happy birthday, Teteh.
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
-  function getState() {
-    return state;
-  }
-
   function deepMerge(base, patch) {
     if (typeof patch !== "object" || patch == null) return base;
     for (const k of Object.keys(patch)) {
       if (Array.isArray(patch[k])) base[k] = patch[k].slice();
-      else if (typeof patch[k] === "object" && patch[k] != null) {
-        base[k] = deepMerge(base[k] ?? {}, patch[k]);
-      } else base[k] = patch[k];
+      else if (typeof patch[k] === "object" && patch[k] != null) base[k] = deepMerge(base[k] ?? {}, patch[k]);
+      else base[k] = patch[k];
     }
     return base;
   }
 
   let state = loadState();
 
-  // ===== Toast system (auto dismiss 3s) =====
+  // ===== DOM refs (MUST exist; index.html provides them) =====
+  const app = $("#app");
   const toastRoot = $("#toasts");
+  const soundBtn = $("#soundBtn");
+
+  // ===== Toasts auto dismiss 3s =====
   function toast(msg) {
     const el = document.createElement("div");
     el.className = "toast";
     el.textContent = msg;
     toastRoot.appendChild(el);
 
-    // auto-dismiss (requirement #2)
-    window.setTimeout(() => {
+    setTimeout(() => {
       el.style.opacity = "0";
       el.style.transform = "translateY(6px)";
       el.style.transition = "opacity 200ms ease, transform 200ms ease";
-      window.setTimeout(() => el.remove(), 220);
+      setTimeout(() => el.remove(), 220);
     }, 3000);
   }
 
-  // ===== Sound =====
+  // ===== Sound (safe on iOS Safari) =====
   let audioUnlocked = false;
   const sfx = {
     tap: new Audio("./assets/sfx/tap.mp3"),
@@ -245,9 +160,19 @@ Happy birthday, Teteh.
     a.volume = 0.6;
   });
 
+  function unlockAudioOnce() {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    try {
+      sfx.tap.play().then(() => {
+        sfx.tap.pause();
+        sfx.tap.currentTime = 0;
+      }).catch(() => {});
+    } catch {}
+  }
+
   function playSfx(name) {
-    const st = getState();
-    if (!st.settings.soundEnabled) return;
+    if (!state.settings.soundEnabled) return;
     if (!audioUnlocked) return;
     const a = sfx[name];
     if (!a) return;
@@ -257,23 +182,11 @@ Happy birthday, Teteh.
     } catch {}
   }
 
-  function unlockAudioOnce() {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
-    // Prime (iOS Safari)
-    try {
-      sfx.tap.play().then(() => {
-        sfx.tap.pause();
-        sfx.tap.currentTime = 0;
-      }).catch(() => {});
-    } catch {}
-  }
-
   // ===== Navbar routing =====
   $$(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      playSfx("tap");
       unlockAudioOnce();
+      playSfx("tap");
       navigate(btn.dataset.nav);
     });
   });
@@ -290,8 +203,7 @@ Happy birthday, Teteh.
     render();
   }
 
-  // ===== Topbar sound button =====
-  const soundBtn = $("#soundBtn");
+  // ===== Topbar =====
   soundBtn.addEventListener("click", () => {
     unlockAudioOnce();
     state.settings.soundEnabled = !state.settings.soundEnabled;
@@ -306,32 +218,28 @@ Happy birthday, Teteh.
     document.documentElement.style.setProperty("--primary", state.settings.primary);
   }
 
-  // ===== Levels definition =====
+  // ===== Levels =====
   const LEVELS = [
     { id: "L1", title: "Tap Catch", subtitle: "Quick reflex, cozy vibe." },
     { id: "L2", title: "Memory Match", subtitle: "Match the icons." },
-    { id: "L3", title: "Sliding Puzzle", subtitle: "Solve the 5×5." }, // requirement #3
+    { id: "L3", title: "Sliding Puzzle", subtitle: "Solve the 4×4." },
     { id: "L4", title: "Trace Spell", subtitle: "Follow the line." },
-    { id: "L5", title: "Word Scramble", subtitle: "General phrases." }, // requirement #4
+    { id: "L5", title: "Word Scramble", subtitle: "General phrases." },
     { id: "L6", title: "Food Polaroids", subtitle: "Tap food, open memories." },
     { id: "L7", title: "Final Vault", subtitle: "Enter the code." },
     { id: "L8", title: "Bonus • Spot The Difference", subtitle: "Look closely." },
   ];
 
   function isUnlockedLevel(levelId) {
-    // unlock sequentially; L1 always unlocked; L7 requires digits ready
     const idx = LEVELS.findIndex((l) => l.id === levelId);
     if (idx <= 0) return true;
-    // unlocked if previous completed
     const prev = LEVELS[idx - 1]?.id;
     return !!state.progress.completed[prev];
   }
 
   function ensureVaultCode() {
     if (state.progress.vaultCode) return;
-    // generate stable vault code for this playthrough
-    const code = String(randInt(1000, 9999));
-    state.progress.vaultCode = code;
+    state.progress.vaultCode = String(randInt(1000, 9999));
     saveState();
   }
 
@@ -339,8 +247,6 @@ Happy birthday, Teteh.
     ensureVaultCode();
     const idx = Object.keys(state.progress.digitsEarned).length;
     if (idx >= CONFIG.vaultDigitsCount) return;
-
-    // digits come from vaultCode in order: L1..L4 (simple)
     const digit = state.progress.vaultCode[idx];
     state.progress.digitsEarned[levelId] = digit;
     saveState();
@@ -357,25 +263,27 @@ Happy birthday, Teteh.
     saveState();
   }
 
-  // ===== Secret taps (requirement #8 add secret) =====
+  function progressText() {
+    return `${Object.keys(state.progress.completed).length}/${LEVELS.length} done`;
+  }
+
+  // ===== Secret taps =====
   function handleSecretTap() {
-    state.progress.secretTapCount = (state.progress.secretTapCount || 0) + 1;
+    state.progress.secretTapCount += 1;
     if (state.progress.secretTapCount >= CONFIG.secretTapsNeeded && !state.progress.secretUnlocked) {
       state.progress.secretUnlocked = true;
+      // unlock bonus note
+      state.progress.notesUnlocked = Math.max(state.progress.notesUnlocked, 8);
       saveState();
       playSfx("unlock");
-      toast("Secret unlocked ✦ Check Notes 💌");
-      // grant bonus note
-      state.progress.notesUnlocked = Math.max(state.progress.notesUnlocked, 1);
+      toast("Secret unlocked ✦ check Notes");
     } else {
       saveState();
       toast(`✦ ${CONFIG.secretTapsNeeded - state.progress.secretTapCount} more…`);
     }
   }
 
-  // ===== Render =====
-  const app = $("#app");
-
+  // ===== Render router =====
   function render() {
     renderTopBar();
     setActiveNav(state.route);
@@ -392,18 +300,16 @@ Happy birthday, Teteh.
       <section class="card">
         <div class="h1">Hi ${escapeHtml(CONFIG.gfName)} ✦</div>
         <p class="p">
-          This is a tiny quest made by ${escapeHtml(CONFIG.youName)}.
-          No timers. Unlimited retries. Just cozy little wins and love notes.
+          This is a tiny quest to celebrate you, ${escapeHtml(CONFIG.gfName)}.
+          No timers. Unlimited retries. Cozy wins + love notes. Might want to see the video below first hahah!
         </p>
         <div class="spacer"></div>
         <div class="row">
           <button class="btn primary" id="startBtn" type="button">Start Adventure</button>
-          <button class="btn ghost" id="levelsBtn" type="button">Pick a Level</button>
+          <button class="btn ghost" id="levelsBtn" type="button">Other Web</button>
         </div>
         <div class="spacer"></div>
-        <button class="btn full" id="secretStar" type="button" aria-label="Secret star">
-          ✦ Tap this star… maybe.
-        </button>
+        <button class="btn full" id="secretStar" type="button">✦</button>
       </section>
 
       <div class="spacer"></div>
@@ -414,24 +320,18 @@ Happy birthday, Teteh.
           <div class="kpi"><span>Notes</span><strong>${state.progress.notesUnlocked}/${CONFIG.loveNotes.length}</strong></div>
         </div>
         <div class="spacer"></div>
-        <p class="p">Tip: You can replay any level and it will randomize so it stays fun.</p>
+        <p class="p">Tip: level bakal ke randomize tiap saat, supaya ga gampang bosen!</p>
       </section>
     `;
 
     $("#startBtn").addEventListener("click", () => {
-      unlockAudioOnce();
-      playSfx("tap");
-      navigate("levels");
+      unlockAudioOnce(); playSfx("tap"); navigate("levels");
     });
     $("#levelsBtn").addEventListener("click", () => {
-      unlockAudioOnce();
-      playSfx("tap");
-      navigate("levels");
+      unlockAudioOnce(); playSfx("tap"); navigate("levels");
     });
     $("#secretStar").addEventListener("click", () => {
-      unlockAudioOnce();
-      playSfx("tap");
-      handleSecretTap();
+      unlockAudioOnce(); playSfx("tap"); handleSecretTap();
     });
   }
 
@@ -441,7 +341,7 @@ Happy birthday, Teteh.
       const done = !!state.progress.completed[lv.id];
       const badge = done ? "Done ✓" : unlocked ? "Play" : "Locked";
       return `
-        <button class="level-tile" data-level="${lv.id}" type="button" ${unlocked ? "" : "disabled"} aria-disabled="${!unlocked}">
+        <button class="level-tile" data-level="${lv.id}" type="button" ${unlocked ? "" : "disabled"}>
           <div class="badge">${badge}</div>
           <div class="level-title">${idx + 1}. ${escapeHtml(lv.title)}</div>
           <div class="level-sub">${escapeHtml(lv.subtitle)}</div>
@@ -452,7 +352,7 @@ Happy birthday, Teteh.
     app.innerHTML = `
       <section class="card">
         <div class="h1">Levels</div>
-        <p class="p">Replay levels anytime—each run randomizes.</p>
+        <p class="p">Replay kapan aja, semuanya randomize loh!</p>
         <div class="spacer"></div>
         <div class="grid levels">${tiles}</div>
       </section>
@@ -462,8 +362,7 @@ Happy birthday, Teteh.
       btn.addEventListener("click", () => {
         unlockAudioOnce();
         playSfx("tap");
-        const id = btn.dataset.level;
-        openLevel(id);
+        openLevel(btn.dataset.level);
       });
     });
   }
@@ -472,33 +371,30 @@ Happy birthday, Teteh.
     const n = state.progress.notesUnlocked;
     const secret = state.progress.secretUnlocked;
 
-    const items = CONFIG.loveNotes.map((txt, i) => {
-      const unlocked = i < n;
-      const body = unlocked ? escapeHtml(txt) : "Locked…";
-      return `
-        <div class="card" style="margin-bottom:12px; ${unlocked ? "" : "opacity:0.65"}">
-          <div class="game-top">
-            <div class="kpi"><span>Love Note</span><strong>#${i + 1}</strong></div>
-            <div class="kpi"><span>Status</span><strong>${unlocked ? "Unlocked" : "Locked"}</strong></div>
-          </div>
-          <div class="spacer"></div>
-          <p class="p" style="${unlocked ? "color: rgba(27,31,29,0.85)" : ""}">${body}</p>
-        </div>
-      `;
-    }).join("");
-
     const secretCard = `
-      <div class="card" style="margin-bottom:12px; ${secret ? "" : "opacity:0.65"}">
+      <section class="card" style="margin-bottom:12px; ${secret ? "" : "opacity:0.65"}">
         <div class="game-top">
           <div class="kpi"><span>Secret</span><strong>✦</strong></div>
           <div class="kpi"><span>Status</span><strong>${secret ? "Unlocked" : "Locked"}</strong></div>
         </div>
         <div class="spacer"></div>
-        <p class="p" style="${secret ? "color: rgba(27,31,29,0.85)" : ""}">
-          ${secret ? escapeHtml("You found it. Teteh, you’re my favorite kind of magic.") : "Try tapping the star on Home…"}
-        </p>
-      </div>
+        <p class="p">${secret ? "You found it. Teteh, you’re my favorite kind of magic." : "Try tapping the star on Home…"}</p>
+      </section>
     `;
+
+    const items = CONFIG.loveNotes.map((txt, i) => {
+      const unlocked = i < n;
+      return `
+        <section class="card" style="margin-bottom:12px; ${unlocked ? "" : "opacity:0.65"}">
+          <div class="game-top">
+            <div class="kpi"><span>Love Note</span><strong>#${i + 1}</strong></div>
+            <div class="kpi"><span>Status</span><strong>${unlocked ? "Unlocked" : "Locked"}</strong></div>
+          </div>
+          <div class="spacer"></div>
+          <p class="p" style="${unlocked ? "color: rgba(27,31,29,0.85)" : ""}">${unlocked ? escapeHtml(txt) : "Locked…"}</p>
+        </section>
+      `;
+    }).join("");
 
     app.innerHTML = `
       <section>
@@ -515,16 +411,13 @@ Happy birthday, Teteh.
     app.innerHTML = `
       <section class="card">
         <div class="h1">Settings</div>
-        <p class="p">Everything is stored locally on this device.</p>
+        <p class="p">Saved locally on this device.</p>
         <div class="spacer"></div>
-
         <div class="row">
           <button class="btn" id="toggleHand" type="button">Handedness: ${escapeHtml(state.settings.handedness)}</button>
           <button class="btn" id="toggleSound" type="button">Sound: ${state.settings.soundEnabled ? "On" : "Off"}</button>
         </div>
-
         <div class="spacer"></div>
-
         <button class="btn full" id="resetBtn" type="button">Reset Progress</button>
       </section>
     `;
@@ -542,8 +435,8 @@ Happy birthday, Teteh.
       playSfx("tap");
       state.settings.soundEnabled = !state.settings.soundEnabled;
       saveState();
-      render();
       toast(state.settings.soundEnabled ? "Sound on" : "Sound off");
+      render();
     });
 
     $("#resetBtn").addEventListener("click", () => {
@@ -553,34 +446,6 @@ Happy birthday, Teteh.
       toast("Progress reset");
       render();
     });
-  }
-
-  function progressText() {
-    const done = Object.keys(state.progress.completed).length;
-    return `${done}/${LEVELS.length} done`;
-  }
-
-  // ===== Open a Level (randomized each time) =====
-  function openLevel(levelId) {
-    // Each open: random variant chosen + reset per-run local variables
-    const idx = LEVELS.findIndex((l) => l.id === levelId);
-    if (idx < 0) return;
-
-    // L7 is always unlocked only when L6 done (sequential), plus digits exist
-    if (!isUnlockedLevel(levelId)) {
-      toast("That level is locked.");
-      return;
-    }
-
-    if (levelId === "L1") return renderL1(idx);
-    if (levelId === "L2") return renderL2(idx);
-    if (levelId === "L3") return renderL3(idx);
-    if (levelId === "L4") return renderL4(idx);
-    if (levelId === "L5") return renderL5(idx);
-    if (levelId === "L6") return renderL6(idx);
-    if (levelId === "L7") return renderL7(idx);
-    if (levelId === "L8") return renderL8(idx);
-
   }
 
   function backToLevelsBtn() {
@@ -594,12 +459,26 @@ Happy birthday, Teteh.
     });
   }
 
+  // ===== Level dispatcher =====
+  function openLevel(levelId) {
+    if (!isUnlockedLevel(levelId)) return toast("That level is locked.");
+
+    const idx = LEVELS.findIndex((l) => l.id === levelId);
+
+    if (levelId === "L1") return renderL1(idx);
+    if (levelId === "L2") return renderL2(idx);
+    if (levelId === "L3") return renderL3(idx); // 5x5
+    if (levelId === "L4") return renderL4(idx);
+    if (levelId === "L5") return renderL5(idx);
+    if (levelId === "L6") return renderL6(idx);
+    if (levelId === "L7") return renderL7(idx);
+    if (levelId === "L8") return renderL8(idx); // bonus
+  }
+
   // ===== Level 1: Tap Catch =====
   function renderL1(levelIndex0) {
     const variant = pick(CONFIG.tapCatch);
-
     let score = 0;
-    const goal = variant.goal;
 
     app.innerHTML = `
       <section class="card">
@@ -608,11 +487,11 @@ Happy birthday, Teteh.
             <div class="h1" style="margin:0;">Level 1 • Tap Catch</div>
             <p class="p">${escapeHtml(variant.hint)}</p>
           </div>
-          <div class="kpi"><span>Score</span><strong id="score">${score}/${goal}</strong></div>
+          <div class="kpi"><span>Score</span><strong id="score">${score}/${variant.goal}</strong></div>
         </div>
 
         <div class="spacer"></div>
-        <div class="tap-area" id="tapArea" aria-label="Tap area"></div>
+        <div class="tap-area" id="tapArea"></div>
 
         <div class="spacer"></div>
         ${backToLevelsBtn()}
@@ -621,9 +500,8 @@ Happy birthday, Teteh.
 
     const area = $("#tapArea");
     const icons = shuffle([variant.target, ...variant.decoys]);
-
-    // create multiple floaters
     const floaters = [];
+
     for (let i = 0; i < 7; i++) {
       const el = document.createElement("button");
       el.type = "button";
@@ -637,18 +515,16 @@ Happy birthday, Teteh.
       el.addEventListener("click", () => {
         unlockAudioOnce();
         playSfx("tap");
+
         if (el.textContent === variant.target) {
           score += 1;
-          $("#score").textContent = `${score}/${goal}`;
-          if (score >= goal) {
+          $("#score").textContent = `${score}/${variant.goal}`;
+          if (score >= variant.goal) {
             playSfx("success");
             toast("Nice ✦ Love note unlocked!");
-            // award digit for L1 if needed
             awardDigit("L1");
             awardNote(levelIndex0);
             completeLevel("L1");
-            saveState();
-            // show digit reveal if digit awarded
             const digit = state.progress.digitsEarned["L1"];
             if (digit) toast(`You got a digit: ${digit}`);
           }
@@ -665,28 +541,21 @@ Happy birthday, Teteh.
     function tick() {
       const w = area.clientWidth;
       const h = area.clientHeight;
-
       for (const el of floaters) {
-        const r = el.getBoundingClientRect();
-        const ar = area.getBoundingClientRect();
         let x = parseFloat(el.style.left);
         let y = parseFloat(el.style.top);
         let vx = parseFloat(el.dataset.vx);
         let vy = parseFloat(el.dataset.vy);
 
-        x += vx;
-        y += vy;
-
+        x += vx; y += vy;
         if (x <= 0 || x >= w - 56) vx *= -1;
         if (y <= 0 || y >= h - 56) vy *= -1;
 
         el.dataset.vx = String(vx);
         el.dataset.vy = String(vy);
-
         el.style.left = clamp(x, 0, w - 56) + "px";
         el.style.top = clamp(y, 0, h - 56) + "px";
       }
-
       raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
@@ -694,16 +563,15 @@ Happy birthday, Teteh.
     wireBackToLevels();
   }
 
-  // ===== Level 2: Memory Match (SVG icons) =====
+  // ===== Level 2: Memory Match (SVG) =====
   function renderL2(levelIndex0) {
-    const set = pick(CONFIG.memoryMatchSets);
-    // 8 pairs => 16 cards (4x4)
-    const pairs = set.slice(0, 8);
+    const setKinds = pick(CONFIG.memoryMatchKinds);
+    const pairs = setKinds.slice(0, 8).map((k) => svgIcon(k, CONFIG.primary));
     const deck = shuffle([...pairs, ...pairs]).map((svg, i) => ({
       id: i,
       key: hash(svg),
       svg,
-      state: "hidden", // hidden | shown | matched
+      state: "hidden",
     }));
 
     let first = null;
@@ -715,7 +583,7 @@ Happy birthday, Teteh.
         <div class="game-top">
           <div>
             <div class="h1" style="margin:0;">Level 2 • Memory Match</div>
-            <p class="p">Match all pairs. (SVG-based, easy to swap later)</p>
+            <p class="p">Match all pairs. (SVG-based)</p>
           </div>
           <div class="kpi"><span>Matched</span><strong id="mmKpi">${matched}/8</strong></div>
         </div>
@@ -738,7 +606,6 @@ Happy birthday, Teteh.
         btn.className = "mm-card";
         if (c.state !== "hidden") btn.classList.add("revealed");
         if (c.state === "matched") btn.classList.add("matched");
-
         btn.innerHTML = c.state === "hidden" ? "" : c.svg;
 
         btn.addEventListener("click", () => {
@@ -749,10 +616,7 @@ Happy birthday, Teteh.
           c.state = "shown";
           renderDeck();
 
-          if (!first) {
-            first = c;
-            return;
-          }
+          if (!first) { first = c; return; }
 
           if (first.key === c.key) {
             first.state = "matched";
@@ -768,13 +632,12 @@ Happy birthday, Teteh.
               awardDigit("L2");
               awardNote(levelIndex0);
               completeLevel("L2");
-              saveState();
               const digit = state.progress.digitsEarned["L2"];
               if (digit) toast(`You got a digit: ${digit}`);
             }
           } else {
             lock = true;
-            window.setTimeout(() => {
+            setTimeout(() => {
               first.state = "hidden";
               c.state = "hidden";
               first = null;
@@ -792,140 +655,31 @@ Happy birthday, Teteh.
     wireBackToLevels();
   }
 
-  // ===== Level 3: Sliding Puzzle (5x5) =====
-function renderL3(levelIndex0) {
-  const SIZE = 5;
-  const TOTAL = SIZE * SIZE;
+  // ===== Level 3: 4x4 Sliding Puzzle =====
+  function renderL3(levelIndex0) {
+    const SIZE = 4;
+    const TOTAL = SIZE * SIZE;
 
-  const goal = Array.from({ length: TOTAL - 1 }, (_, i) => i + 1).concat(0);
-  let board = goal.slice();
-
-  board = shuffleByMoves5x5(board, SIZE, 120);
-
-  app.innerHTML = `
-    <section class="card">
-      <div class="game-top">
-        <div>
-          <div class="h1" style="margin:0;">Level 3 • 5×5 Sliding Puzzle</div>
-          <p class="p">Arrange tiles 1–24 in order. This one is harder.</p>
-        </div>
-        <div class="kpi"><span>Status</span><strong id="pzStatus">Unsolved</strong></div>
-      </div>
-
-      <div class="spacer"></div>
-      <div class="puzzle-grid" id="pzGrid" style="grid-template-columns:repeat(5,1fr);"></div>
-
-      <div class="spacer"></div>
-      <div class="row">
-        <button class="btn" id="pzShuffle" type="button">Shuffle</button>
-        <button class="btn ghost" id="pzHint" type="button">Hint</button>
-      </div>
-
-      <div class="spacer"></div>
-      ${backToLevelsBtn()}
-    </section>
-  `;
-
-  const grid = $("#pzGrid");
-
-  function renderBoard() {
-    grid.innerHTML = "";
-    board.forEach((v, i) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "puzzle-tile" + (v === 0 ? " empty" : "");
-      btn.textContent = v === 0 ? "" : String(v);
-
-      btn.addEventListener("click", () => {
-        unlockAudioOnce();
-        playSfx("tap");
-
-        if (v === 0) return;
-
-        const zi = board.indexOf(0);
-        if (!isNeighbor5x5(i, zi, SIZE)) return;
-
-        [board[i], board[zi]] = [board[zi], board[i]];
-        renderBoard();
-
-        if (isSolved(board, goal)) {
-          $("#pzStatus").textContent = "Solved ✓";
-          playSfx("success");
-          toast("5×5 puzzle solved ✦ Love note unlocked!");
-          awardDigit("L3");
-          awardNote(levelIndex0);
-          completeLevel("L3");
-          saveState();
-        }
-      });
-
-      grid.appendChild(btn);
-    });
-  }
-
-  $("#pzShuffle").addEventListener("click", () => {
-    playSfx("tap");
-    board = shuffleByMoves5x5(goal.slice(), SIZE, 120);
-    $("#pzStatus").textContent = "Unsolved";
-    renderBoard();
-  });
-
-  $("#pzHint").addEventListener("click", () => {
-    playSfx("tap");
-    toast("Tip: Solve row by row. Start from top-left.");
-  });
-
-  renderBoard();
-  wireBackToLevels();
-}
-
-function isNeighbor5x5(i, j, size) {
-  const r1 = Math.floor(i / size), c1 = i % size;
-  const r2 = Math.floor(j / size), c2 = j % size;
-  return (Math.abs(r1 - r2) + Math.abs(c1 - c2)) === 1;
-}
-
-function shuffleByMoves5x5(board, size, moves) {
-  for (let m = 0; m < moves; m++) {
-    const zi = board.indexOf(0);
-    const neighbors = [];
-    for (let i = 0; i < board.length; i++) {
-      if (isNeighbor5x5(i, zi, size)) neighbors.push(i);
-    }
-    const pickI = neighbors[Math.floor(Math.random() * neighbors.length)];
-    [board[pickI], board[zi]] = [board[zi], board[pickI]];
-  }
-  return board;
-}
-
-
-  // ===== Level 4: Trace Spell =====
-  function renderL4(levelIndex0) {
-    const variant = pick(CONFIG.tracePaths);
+    const goal = Array.from({ length: TOTAL - 1 }, (_, i) => i + 1).concat(0);
+    let board = shuffleByMoves(goal.slice(), SIZE, 90);
 
     app.innerHTML = `
       <section class="card">
         <div class="game-top">
           <div>
-            <div class="h1" style="margin:0;">Level 4 • Trace Spell</div>
-            <p class="p">${escapeHtml(variant.hint)} (Stay close to the line)</p>
+            <div class="h1" style="margin:0;">Level 3 • 4×4 Sliding Puzzle</div>
+            <p class="p">Arrange tiles 1–15 in order. (Harder)</p>
           </div>
-          <div class="kpi"><span>Accuracy</span><strong id="acc">0%</strong></div>
+          <div class="kpi"><span>Status</span><strong id="pzStatus">Unsolved</strong></div>
         </div>
 
         <div class="spacer"></div>
-
-        <div class="tap-area" id="traceArea" style="height:320px; display:grid; place-items:center;">
-          <svg id="traceSvg" viewBox="0 0 480 320" width="100%" height="100%" style="overflow:visible;">
-            <path id="guide" d="${variant.path}" fill="none" stroke="rgba(132,139,121,0.55)" stroke-width="10" stroke-linecap="round"/>
-            <path id="drawn" d="" fill="none" stroke="rgba(27,31,29,0.85)" stroke-width="8" stroke-linecap="round"/>
-          </svg>
-        </div>
+        <div class="puzzle-grid" id="pzGrid" style="grid-template-columns:repeat(4,1fr);"></div>
 
         <div class="spacer"></div>
         <div class="row">
-          <button class="btn" id="traceClear" type="button">Clear</button>
-          <button class="btn primary" id="traceSubmit" type="button">Submit</button>
+          <button class="btn" id="pzShuffle" type="button">Shuffle</button>
+          <button class="btn ghost" id="pzHint" type="button">Hint</button>
         </div>
 
         <div class="spacer"></div>
@@ -933,123 +687,250 @@ function shuffleByMoves5x5(board, size, moves) {
       </section>
     `;
 
-    const area = $("#traceArea");
-    const drawn = $("#drawn");
-    const guide = $("#guide");
-    const accEl = $("#acc");
+    const grid = $("#pzGrid");
 
-    let drawing = false;
-    let points = [];
+    function renderBoard() {
+      grid.innerHTML = "";
+      board.forEach((v, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "puzzle-tile" + (v === 0 ? " empty" : "");
+        btn.textContent = v === 0 ? "" : String(v);
 
-    const guideLen = guide.getTotalLength();
+        btn.addEventListener("click", () => {
+          unlockAudioOnce(); playSfx("tap");
+          if (v === 0) return;
 
-    function toLocalPoint(e) {
-      const rect = area.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 480;
-      const y = ((e.clientY - rect.top) / rect.height) * 320;
-      return { x, y };
+          const zi = board.indexOf(0);
+          if (!isNeighbor(i, zi, SIZE)) return;
+
+          [board[i], board[zi]] = [board[zi], board[i]];
+          renderBoard();
+
+          if (isSolved(board, goal)) {
+            $("#pzStatus").textContent = "Solved ✓";
+            playSfx("success");
+            toast("Puzzle solved ✦ Love note unlocked!");
+            awardDigit("L3");
+            awardNote(levelIndex0);
+            completeLevel("L3");
+          }
+        });
+
+        grid.appendChild(btn);
+      });
     }
 
-    function onDown(e) {
+    $("#pzShuffle").addEventListener("click", () => {
+      playSfx("tap");
+      board = shuffleByMoves(goal.slice(), SIZE, 110);
+      $("#pzStatus").textContent = "Unsolved";
+      renderBoard();
+      toast("Shuffled");
+    });
+
+    $("#pzHint").addEventListener("click", () => {
+      playSfx("tap");
+      toast("Tip: solve row by row from top-left.");
+    });
+
+    renderBoard();
+    wireBackToLevels();
+  }
+
+  function isNeighbor(i, j, size) {
+    const r1 = Math.floor(i / size), c1 = i % size;
+    const r2 = Math.floor(j / size), c2 = j % size;
+    return (Math.abs(r1 - r2) + Math.abs(c1 - c2)) === 1;
+  }
+
+  function shuffleByMoves(board, size, moves) {
+    for (let m = 0; m < moves; m++) {
+      const zi = board.indexOf(0);
+      const neighbors = [];
+      for (let i = 0; i < board.length; i++) if (isNeighbor(i, zi, size)) neighbors.push(i);
+      const pickI = pick(neighbors);
+      [board[pickI], board[zi]] = [board[zi], board[pickI]];
+    }
+    return board;
+  }
+
+  function isSolved(a, b) {
+    return a.every((v, i) => v === b[i]);
+  }
+
+  // ===== Level 4: Trace Spell =====
+function renderL4(levelIndex0) {
+  const variant = pick(CONFIG.tracePaths);
+
+  app.innerHTML = `
+    <section class="card">
+      <div class="game-top">
+        <div>
+          <div class="h1" style="margin:0;">Level 4 • Trace Spell</div>
+          <p class="p">${escapeHtml(variant.hint)} (stay close to the line)</p>
+        </div>
+        <div class="kpi"><span>Accuracy</span><strong id="acc">0%</strong></div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="tap-area" id="traceArea" style="height:320px; display:grid; place-items:center;">
+        <svg id="traceSvg" viewBox="0 0 480 320" width="100%" height="100%">
+          <path id="guide" d="${variant.path}" fill="none" stroke="rgba(132,139,121,0.55)" stroke-width="10" stroke-linecap="round"/>
+          <path id="drawn" d="" fill="none" stroke="rgba(27,31,29,0.85)" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="spacer"></div>
+      <div class="row">
+        <button class="btn" id="traceClear" type="button">Clear</button>
+        <button class="btn primary" id="traceSubmit" type="button">Submit</button>
+      </div>
+
+      <div class="spacer"></div>
+      ${backToLevelsBtn()}
+    </section>
+  `;
+
+  const area = $("#traceArea");
+  const drawn = $("#drawn");
+  const guide = $("#guide");
+  const accEl = $("#acc");
+  const guideLen = guide.getTotalLength();
+
+  // ✅ REQUIRED state
+  let drawing = false;
+  let points = [];
+  let activePointerId = null;
+
+  function toLocalPoint(e) {
+    const rect = area.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 480;
+    const y = ((e.clientY - rect.top) / rect.height) * 320;
+    return { x, y };
+  }
+
+  function estimateAccuracy(pts) {
+    if (!pts || pts.length < 10) return 0;
+
+    const samples = 60;
+    const guidePts = [];
+    for (let i = 0; i <= samples; i++) {
+      const p = guide.getPointAtLength((i / samples) * guideLen);
+      guidePts.push({ x: p.x, y: p.y });
+    }
+
+    let sum = 0;
+    for (const g of guidePts) {
+      let best = 9999;
+      for (let i = 0; i < pts.length; i += 3) {
+        const dx = pts[i].x - g.x;
+        const dy = pts[i].y - g.y;
+        best = Math.min(best, Math.hypot(dx, dy));
+      }
+      sum += best;
+    }
+
+    const avg = sum / guidePts.length;
+    return clamp(Math.round(100 - avg * 2.0), 0, 100);
+  }
+
+  // ✅ Robust iOS-friendly pointer handling
+  area.addEventListener(
+    "pointerdown",
+    (e) => {
       unlockAudioOnce();
       playSfx("tap");
+
+      activePointerId = e.pointerId;
+      area.setPointerCapture(activePointerId);
+
       drawing = true;
       points = [];
+
       const p = toLocalPoint(e);
       points.push(p);
       drawn.setAttribute("d", `M ${p.x} ${p.y}`);
-    }
 
-    function onMove(e) {
+      e.preventDefault();
+    },
+    { passive: false }
+  );
+
+  area.addEventListener(
+    "pointermove",
+    (e) => {
       if (!drawing) return;
+      if (activePointerId !== e.pointerId) return;
+
       const p = toLocalPoint(e);
       points.push(p);
-      const d = points.map((pt, i) => (i === 0 ? `M ${pt.x} ${pt.y}` : `L ${pt.x} ${pt.y}`)).join(" ");
-      drawn.setAttribute("d", d);
-      accEl.textContent = `${estimateAccuracy(points, guide)}%`;
-    }
 
-    function onUp() {
-      drawing = false;
-    }
+      // Append segment (fast + stable)
+      const seg = ` L ${p.x} ${p.y}`;
+      const current = drawn.getAttribute("d") || "";
+      drawn.setAttribute("d", current ? current + seg : `M ${p.x} ${p.y}`);
 
-    // Pointer events
-    area.addEventListener("pointerdown", (e) => {
-      area.setPointerCapture(e.pointerId);
-      onDown(e);
-    });
-    area.addEventListener("pointermove", onMove);
-    area.addEventListener("pointerup", onUp);
-    area.addEventListener("pointercancel", onUp);
+      accEl.textContent = `${estimateAccuracy(points)}%`;
 
-    $("#traceClear").addEventListener("click", () => {
-      playSfx("tap");
-      points = [];
-      drawn.setAttribute("d", "");
-      accEl.textContent = "0%";
-    });
+      e.preventDefault();
+    },
+    { passive: false }
+  );
 
-    $("#traceSubmit").addEventListener("click", () => {
-      playSfx("tap");
-      const acc = estimateAccuracy(points, guide);
-      if (acc >= 78) {
-        playSfx("success");
-        toast("Spell traced ✦ Love note unlocked!");
-        awardDigit("L4");
-        awardNote(levelIndex0);
-        completeLevel("L4");
-        saveState();
-        const digit = state.progress.digitsEarned["L4"];
-        if (digit) toast(`You got a digit: ${digit}`);
-      } else {
-        toast("Close—try staying nearer to the line.");
-      }
-    });
-
-    wireBackToLevels();
-
-    function estimateAccuracy(pts, guidePath) {
-      if (!pts || pts.length < 10) return 0;
-      // Sample guide points along its length and compute average distance from drawn points
-      // Simple + cheap (good enough for iOS)
-      const samples = 60;
-      const guidePts = [];
-      for (let i = 0; i <= samples; i++) {
-        const p = guidePath.getPointAtLength((i / samples) * guideLen);
-        guidePts.push({ x: p.x, y: p.y });
-      }
-
-      let sum = 0;
-      let count = 0;
-      for (const g of guidePts) {
-        // find nearest drawn point (downsample drawn for speed)
-        let best = 9999;
-        for (let i = 0; i < pts.length; i += 3) {
-          const dx = pts[i].x - g.x;
-          const dy = pts[i].y - g.y;
-          const d = Math.hypot(dx, dy);
-          if (d < best) best = d;
-        }
-        sum += best;
-        count++;
-      }
-      const avg = sum / Math.max(1, count);
-      // Convert distance to percent (tweak thresholds)
-      const pct = clamp(Math.round(100 - avg * 2.0), 0, 100);
-      return pct;
-    }
+  function endDraw(e) {
+    if (activePointerId !== e.pointerId) return;
+    drawing = false;
+    activePointerId = null;
+    try {
+      area.releasePointerCapture(e.pointerId);
+    } catch {}
+    e.preventDefault();
   }
 
-  // ===== Level 5: Word Scramble (General + randomized) =====
+  area.addEventListener("pointerup", endDraw, { passive: false });
+  area.addEventListener("pointercancel", endDraw, { passive: false });
+  area.addEventListener("lostpointercapture", () => {
+    drawing = false;
+    activePointerId = null;
+  });
+
+  // Buttons
+  $("#traceClear").addEventListener("click", () => {
+    playSfx("tap");
+    points = [];
+    drawn.setAttribute("d", "");
+    accEl.textContent = "0%";
+  });
+
+  $("#traceSubmit").addEventListener("click", () => {
+    playSfx("tap");
+    const acc = estimateAccuracy(points);
+    if (acc >= 78) {
+      playSfx("success");
+      toast("Spell traced ✦ Love note unlocked!");
+      awardDigit("L4");
+      awardNote(levelIndex0);
+      completeLevel("L4");
+      const digit = state.progress.digitsEarned["L4"];
+      if (digit) toast(`You got a digit: ${digit}`);
+    } else {
+      toast("Close—try staying nearer to the line.");
+    }
+  });
+
+  wireBackToLevels();
+}
+
+
+
+  // ===== Level 5: Word Scramble (randomized) =====
   function renderL5(levelIndex0) {
-    // requirement #4 + #5
     const variant = pick(CONFIG.scrambles);
     const answer = variant.answer.toUpperCase().trim();
-
-    // create tiles: letters + spaces
     const chars = answer.split("").map((c) => (c === " " ? "_" : c));
     const bank = shuffle(chars.slice());
-
     let built = [];
 
     app.innerHTML = `
@@ -1102,16 +983,13 @@ function shuffleByMoves5x5(board, size, moves) {
       ansBox.textContent = shown.length ? shown : "(your answer appears here)";
     }
 
-    $("#hintBtn").addEventListener("click", () => {
-      playSfx("tap");
-      toast(variant.hint);
-    });
+    $("#hintBtn").addEventListener("click", () => { playSfx("tap"); toast(variant.hint); });
 
     $("#clearBtn").addEventListener("click", () => {
       playSfx("tap");
-      // restore
       built = [];
-      for (let i = 0; i < chars.length; i++) bank[i] = chars[i];
+      const fresh = chars.slice();
+      fresh.forEach((c, i) => (bank[i] = c));
       shuffleInPlace(bank);
       renderBank();
       renderAnswer();
@@ -1123,10 +1001,8 @@ function shuffleByMoves5x5(board, size, moves) {
       if (attempt === answer) {
         playSfx("success");
         toast("Correct ✦ Love note unlocked!");
-        awardDigit("L5"); // not used by vault digits (we only need 4), but fine to store
         awardNote(levelIndex0);
         completeLevel("L5");
-        saveState();
       } else {
         toast("Not quite—try again.");
       }
@@ -1140,9 +1016,7 @@ function shuffleByMoves5x5(board, size, moves) {
   // ===== Level 6: Food Polaroids =====
   function renderL6(levelIndex0) {
     const foods = CONFIG.foodGallery.map((f) => ({ ...f }));
-    // randomize positions each open
     shuffleInPlace(foods);
-
     const opened = new Set();
 
     app.innerHTML = `
@@ -1171,13 +1045,9 @@ function shuffleByMoves5x5(board, size, moves) {
       b.type = "button";
       b.className = "level-tile";
       b.style.minHeight = "110px";
-      b.innerHTML = `
-        <div class="level-title">${escapeHtml(f.label)}</div>
-        <div class="level-sub">Tap to open</div>
-      `;
+      b.innerHTML = `<div class="level-title">${escapeHtml(f.label)}</div><div class="level-sub">Tap to open</div>`;
       b.addEventListener("click", () => {
-        unlockAudioOnce();
-        playSfx("open");
+        unlockAudioOnce(); playSfx("open");
         openPolaroid(f, () => {
           opened.add(f.key);
           $("#openedKpi").textContent = `${opened.size}/4`;
@@ -1193,10 +1063,8 @@ function shuffleByMoves5x5(board, size, moves) {
     $("#foodDone").addEventListener("click", () => {
       playSfx("success");
       toast("Level complete ✦ Love note unlocked!");
-      awardDigit("L6");
       awardNote(levelIndex0);
       completeLevel("L6");
-      saveState();
       navigate("levels");
     });
 
@@ -1210,7 +1078,8 @@ function shuffleByMoves5x5(board, size, moves) {
       <div class="modal" role="dialog" aria-modal="true" aria-label="Polaroid">
         <div class="polaroid">
           <div class="shot">
-            <img src="${escapeAttr(food.img)}" alt="" onerror="this.remove(); this.parentElement.textContent='(add your photo in assets/img)';" />
+            <img src="${escapeAttr(food.img)}" alt=""
+              onerror="this.remove(); this.parentElement.textContent='(add your photo in assets/img)';" />
           </div>
           <div class="cap">${escapeHtml(food.title)}</div>
           <div class="subcap">${escapeHtml(food.caption)}</div>
@@ -1235,11 +1104,9 @@ function shuffleByMoves5x5(board, size, moves) {
     });
   }
 
-  // ===== Level 7: Vault + Final Reveal =====
+  // ===== Level 7: Vault =====
   function renderL7(levelIndex0) {
     ensureVaultCode();
-
-    // Ensure digits exist for L1-L4. If not, still let user play, but show missing.
     const need = ["L1", "L2", "L3", "L4"];
     const haveDigits = need.map((id) => state.progress.digitsEarned[id]).filter(Boolean);
 
@@ -1275,22 +1142,17 @@ function shuffleByMoves5x5(board, size, moves) {
 
     $("#vaultHint").addEventListener("click", () => {
       playSfx("tap");
-      const list = need
-        .map((id) => `${id}: ${state.progress.digitsEarned[id] ?? "—"}`)
-        .join("  •  ");
-      toast(list);
+      toast(need.map((id) => `${id}:${state.progress.digitsEarned[id] ?? "—"}`).join("  •  "));
     });
 
     $("#vaultSubmit").addEventListener("click", () => {
-      unlockAudioOnce();
-      playSfx("tap");
+      unlockAudioOnce(); playSfx("tap");
       const v = ($("#vaultInput").value || "").trim();
       if (v === state.progress.vaultCode) {
         playSfx("unlock");
         toast("Unlocked ✦");
         awardNote(levelIndex0);
         completeLevel("L7");
-        saveState();
         renderFinal();
       } else {
         toast("Wrong code. Try again.");
@@ -1304,15 +1166,12 @@ function shuffleByMoves5x5(board, size, moves) {
     app.innerHTML = `
       <section class="card">
         <div class="h1" style="margin:0;">Happy Birthday, ${escapeHtml(CONFIG.gfName)} ✦</div>
-        <p class="p">You finished the quest. Now take this.</p>
+        <p class="p">You finished the quest. Screenshot this photobooth frame 📸</p>
 
         <div class="spacer"></div>
-        <div class="booth" aria-label="Photobooth frame">
+        <div class="booth">
           <div class="frame" aria-hidden="true"></div>
-          <div class="hint">
-            Photobooth frame ✦<br/>
-            Put your photo/video here later, then take a screenshot 📸
-          </div>
+          <div class="hint">Put your photo/video here later, then screenshot ✦</div>
         </div>
 
         <div class="spacer"></div>
@@ -1328,11 +1187,7 @@ function shuffleByMoves5x5(board, size, moves) {
       </section>
     `;
 
-    $("#replayBtn").addEventListener("click", () => {
-      playSfx("tap");
-      navigate("levels");
-    });
-
+    $("#replayBtn").addEventListener("click", () => { playSfx("tap"); navigate("levels"); });
     $("#resetBtn2").addEventListener("click", () => {
       playSfx("tap");
       state = structuredClone(DEFAULT_STATE);
@@ -1342,181 +1197,132 @@ function shuffleByMoves5x5(board, size, moves) {
     });
   }
 
+  // ===== Level 8: Bonus Spot The Difference =====
+  function renderL8(levelIndex0) {
+    // randomized zones: pick 3 patterns
+    const patterns = [
+      [{ x: 18, y: 22 }, { x: 72, y: 48 }, { x: 38, y: 76 }],
+      [{ x: 24, y: 30 }, { x: 64, y: 62 }, { x: 52, y: 18 }],
+      [{ x: 14, y: 58 }, { x: 56, y: 44 }, { x: 78, y: 74 }],
+    ];
+    const differences = pick(patterns);
+    const found = new Set();
+
+    app.innerHTML = `
+      <section class="card">
+        <div class="h1" style="margin:0;">Level 8 • Bonus</div>
+        <p class="p">Tap the 3 hidden differences.</p>
+
+        <div class="spacer"></div>
+        <div class="diff-area" id="diffArea"></div>
+
+        <div class="spacer"></div>
+        <div class="game-top">
+          <div class="kpi"><span>Found</span><strong id="diffKpi">0/3</strong></div>
+          <button class="btn primary" id="diffDone" type="button" disabled>Finish</button>
+        </div>
+
+        <div class="spacer"></div>
+        ${backToLevelsBtn()}
+      </section>
+    `;
+
+    const area = $("#diffArea");
+    differences.forEach((d, i) => {
+      const z = document.createElement("button");
+      z.type = "button";
+      z.className = "diff-zone";
+      z.style.left = `${d.x}%`;
+      z.style.top = `${d.y}%`;
+      z.setAttribute("aria-label", "difference");
+      z.addEventListener("click", () => {
+        unlockAudioOnce();
+        if (found.has(i)) return;
+        found.add(i);
+        playSfx("success");
+        z.classList.add("found");
+        $("#diffKpi").textContent = `${found.size}/3`;
+        if (found.size === 3) {
+          $("#diffDone").disabled = false;
+          toast("Bonus complete ✦ extra note unlocked!");
+          awardNote(levelIndex0);
+          completeLevel("L8");
+        }
+      });
+      area.appendChild(z);
+    });
+
+    $("#diffDone").addEventListener("click", () => {
+      playSfx("tap");
+      navigate("notes");
+    });
+
+    wireBackToLevels();
+  }
+
   // ===== Utils =====
-  function randInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-  function clamp(v, a, b) {
-    return Math.max(a, Math.min(b, v));
-  }
-  function pick(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
   function shuffle(arr) {
     const a = arr.slice();
     shuffleInPlace(a);
     return a;
   }
+
   function shuffleInPlace(a) {
     for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
     }
   }
+
   function hash(s) {
     let h = 0;
-    for (let i = 0; i < s.length; i++) {
-      h = (h << 5) - h + s.charCodeAt(i);
-      h |= 0;
-    }
+    for (let i = 0; i < s.length; i++) { h = (h << 5) - h + s.charCodeAt(i); h |= 0; }
     return String(h);
   }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
     }[c]));
   }
-  function escapeAttr(s) {
-    return escapeHtml(s).replace(/"/g, "&quot;");
-  }
+  function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
 
-  // ===== SVG icon factory (Requirement #6) =====
+  // SVG icon factory
   function svgIcon(kind, color) {
-    const c = color || "#848b79";
-    // keep them simple: 34x34, stroke-friendly
+    const c = color || CONFIG.primary;
     const base = (inner) => `
       <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         ${inner}
       </svg>
     `;
     switch (kind) {
-      case "spark":
-        return base(`<path d="M24 6l3.5 12.5L40 22l-12.5 3.5L24 38l-3.5-12.5L8 22l12.5-3.5L24 6z" fill="${c}" opacity="0.9"/>`);
-      case "leaf":
-        return base(`<path d="M38 10C26 10 14 18 10 30c10 0 20-6 24-16 1 5-2 12-8 18 8-2 14-10 12-22z" fill="${c}" opacity="0.9"/>`);
-      case "moon":
-        return base(`<path d="M30 10a14 14 0 1 0 8 26A12 12 0 1 1 30 10z" fill="${c}" opacity="0.9"/>`);
-      case "puff":
-        return base(`<path d="M16 28c-3 0-6-2-6-6s3-6 6-6c1 0 2 0 3 .5C20 13 23 11 26 11c5 0 9 4 9 9v1c3 1 5 4 5 7 0 4-3 7-7 7H16z" fill="${c}" opacity="0.9"/>`);
-      case "wand":
-        return base(`<path d="M12 36l22-22" stroke="${c}" stroke-width="5" stroke-linecap="round"/><path d="M33 13l4-4" stroke="${c}" stroke-width="4" stroke-linecap="round"/><circle cx="38" cy="10" r="2.5" fill="${c}"/>`);
-      case "heart":
-        return base(`<path d="M24 40s-14-8-14-18c0-5 4-9 9-9 3 0 5 1 7 3 2-2 4-3 7-3 5 0 9 4 9 9 0 10-18 18-18 18z" fill="${c}" opacity="0.9"/>`);
-      case "star":
-        return base(`<path d="M24 6l6 14h14l-11 9 4 15-13-9-13 9 4-15-11-9h14l6-14z" fill="${c}" opacity="0.9"/>`);
-      case "potion":
-        return base(`<path d="M18 6h12v4l-3 4v6l7 10c2 3 0 6-3 6H17c-3 0-5-3-3-6l7-10v-6l-3-4V6z" fill="${c}" opacity="0.9"/>`);
-      case "gem":
-        return base(`<path d="M16 14l8-8 8 8-8 26-8-26z" fill="${c}" opacity="0.9"/>`);
-      case "book":
-        return base(`<path d="M12 10c7 0 10 2 12 4v26c-2-2-5-4-12-4V10z" fill="${c}" opacity="0.9"/><path d="M36 10c-7 0-10 2-12 4v26c2-2 5-4 12-4V10z" fill="${c}" opacity="0.55"/>`);
-      case "cloud":
-        return base(`<path d="M16 30c-4 0-7-3-7-7 0-4 3-7 7-7 1 0 2 0 3 .5C20 13 23 11 27 11c6 0 10 4 10 10 3 1 5 4 5 7 0 4-3 7-7 7H16z" fill="${c}" opacity="0.9"/>`);
-      case "feather":
-        return base(`<path d="M36 12c-10 0-18 10-18 22 8-2 14-8 16-16-4 6-10 10-16 12 2-10 8-18 18-18z" fill="${c}" opacity="0.9"/>`);
-      case "bell":
-        return base(`<path d="M24 42c3 0 5-2 5-5H19c0 3 2 5 5 5z" fill="${c}" opacity="0.9"/><path d="M12 34h24c-2-3-4-6-4-14 0-6-4-10-8-10s-8 4-8 10c0 8-2 11-4 14z" fill="${c}" opacity="0.55"/>`);
-      case "sun":
-        return base(`<circle cx="24" cy="24" r="8" fill="${c}" opacity="0.9"/><path d="M24 6v6M24 36v6M6 24h6M36 24h6M10 10l4 4M34 34l4 4M38 10l-4 4M14 34l-4 4" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`);
-      case "orb":
-        return base(`<circle cx="24" cy="24" r="14" fill="${c}" opacity="0.25"/><circle cx="24" cy="24" r="9" fill="${c}" opacity="0.9"/>`);
-      case "shield":
-        return base(`<path d="M24 6l14 6v12c0 10-6 16-14 18-8-2-14-8-14-18V12l14-6z" fill="${c}" opacity="0.9"/>`);
-      case "fish":
-        return base(`<path d="M10 24c6-8 16-10 26-6l6-6v24l-6-6c-10 4-20 2-26-6z" fill="${c}" opacity="0.9"/><circle cx="30" cy="22" r="2" fill="#fff"/>`);
-      case "cup":
-        return base(`<path d="M16 12h16v10c0 6-4 10-8 10s-8-4-8-10V12z" fill="${c}" opacity="0.9"/><path d="M32 14h4c2 0 4 2 4 4s-2 4-4 4h-4v-8z" fill="${c}" opacity="0.55"/>`);
-      default:
-        return base(`<circle cx="24" cy="24" r="14" fill="${c}" opacity="0.9"/>`);
+      case "spark": return base(`<path d="M24 6l3.5 12.5L40 22l-12.5 3.5L24 38l-3.5-12.5L8 22l12.5-3.5L24 6z" fill="${c}" opacity="0.9"/>`);
+      case "leaf": return base(`<path d="M38 10C26 10 14 18 10 30c10 0 20-6 24-16 1 5-2 12-8 18 8-2 14-10 12-22z" fill="${c}" opacity="0.9"/>`);
+      case "moon": return base(`<path d="M30 10a14 14 0 1 0 8 26A12 12 0 1 1 30 10z" fill="${c}" opacity="0.9"/>`);
+      case "puff": return base(`<path d="M16 28c-3 0-6-2-6-6s3-6 6-6c1 0 2 0 3 .5C20 13 23 11 26 11c5 0 9 4 9 9v1c3 1 5 4 5 7 0 4-3 7-7 7H16z" fill="${c}" opacity="0.9"/>`);
+      case "wand": return base(`<path d="M12 36l22-22" stroke="${c}" stroke-width="5" stroke-linecap="round"/><path d="M33 13l4-4" stroke="${c}" stroke-width="4" stroke-linecap="round"/><circle cx="38" cy="10" r="2.5" fill="${c}"/>`);
+      case "heart": return base(`<path d="M24 40s-14-8-14-18c0-5 4-9 9-9 3 0 5 1 7 3 2-2 4-3 7-3 5 0 9 4 9 9 0 10-18 18-18 18z" fill="${c}" opacity="0.9"/>`);
+      case "star": return base(`<path d="M24 6l6 14h14l-11 9 4 15-13-9-13 9 4-15-11-9h14l6-14z" fill="${c}" opacity="0.9"/>`);
+      case "potion": return base(`<path d="M18 6h12v4l-3 4v6l7 10c2 3 0 6-3 6H17c-3 0-5-3-3-6l7-10v-6l-3-4V6z" fill="${c}" opacity="0.9"/>`);
+      case "gem": return base(`<path d="M16 14l8-8 8 8-8 26-8-26z" fill="${c}" opacity="0.9"/>`);
+      case "book": return base(`<path d="M12 10c7 0 10 2 12 4v26c-2-2-5-4-12-4V10z" fill="${c}" opacity="0.9"/><path d="M36 10c-7 0-10 2-12 4v26c2-2 5-4 12-4V10z" fill="${c}" opacity="0.55"/>`);
+      case "cloud": return base(`<path d="M16 30c-4 0-7-3-7-7 0-4 3-7 7-7 1 0 2 0 3 .5C20 13 23 11 27 11c6 0 10 4 10 10 3 1 5 4 5 7 0 4-3 7-7 7H16z" fill="${c}" opacity="0.9"/>`);
+      case "feather": return base(`<path d="M36 12c-10 0-18 10-18 22 8-2 14-8 16-16-4 6-10 10-16 12 2-10 8-18 18-18z" fill="${c}" opacity="0.9"/>`);
+      case "bell": return base(`<path d="M24 42c3 0 5-2 5-5H19c0 3 2 5 5 5z" fill="${c}" opacity="0.9"/><path d="M12 34h24c-2-3-4-6-4-14 0-6-4-10-8-10s-8 4-8 10c0 8-2 11-4 14z" fill="${c}" opacity="0.55"/>`);
+      case "sun": return base(`<circle cx="24" cy="24" r="8" fill="${c}" opacity="0.9"/><path d="M24 6v6M24 36v6M6 24h6M36 24h6M10 10l4 4M34 34l4 4M38 10l-4 4M14 34l-4 4" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`);
+      case "orb": return base(`<circle cx="24" cy="24" r="14" fill="${c}" opacity="0.25"/><circle cx="24" cy="24" r="9" fill="${c}" opacity="0.9"/>`);
+      case "shield": return base(`<path d="M24 6l14 6v12c0 10-6 16-14 18-8-2-14-8-14-18V12l14-6z" fill="${c}" opacity="0.9"/>`);
+      case "fish": return base(`<path d="M10 24c6-8 16-10 26-6l6-6v24l-6-6c-10 4-20 2-26-6z" fill="${c}" opacity="0.9"/><circle cx="30" cy="22" r="2" fill="#fff"/>`);
+      case "cup": return base(`<path d="M16 12h16v10c0 6-4 10-8 10s-8-4-8-10V12z" fill="${c}" opacity="0.9"/><path d="M32 14h4c2 0 4 2 4 4s-2 4-4 4h-4v-8z" fill="${c}" opacity="0.55"/>`);
+      default: return base(`<circle cx="24" cy="24" r="14" fill="${c}" opacity="0.9"/>`);
     }
   }
 
-  // ===== Boot: ensure vault exists once L1 opened later =====
-  function init() {
-    renderTopBar();
-    render();
-
-    // If user completed up to L4 but no vault yet, create it
-    const doneL4 = !!state.progress.completed["L4"];
-    if (doneL4 && !state.progress.vaultCode) {
-      ensureVaultCode();
-      saveState();
-    }
-
-    // unlock audio on first touch anywhere
-    window.addEventListener(
-      "pointerdown",
-      () => {
-        unlockAudioOnce();
-      },
-      { once: true }
-    );
-  }
-
-  init();
+  // ===== boot =====
+  window.addEventListener("pointerdown", () => unlockAudioOnce(), { once: true });
+  render();
 })();
-
-// ===== Level 8: Spot the Difference =====
-function renderL8(levelIndex0) {
-
-  const differences = [
-    { x: 20, y: 30 },
-    { x: 70, y: 55 },
-    { x: 40, y: 75 }
-  ];
-
-  const found = new Set();
-
-  app.innerHTML = `
-    <section class="card">
-      <div class="h1" style="margin:0;">Bonus • Spot The Difference</div>
-      <p class="p">Tap the 3 hidden differences.</p>
-
-      <div class="spacer"></div>
-
-      <div style="position:relative; width:100%; height:300px; background:rgba(132,139,121,0.15); border-radius:18px;" id="diffArea">
-        ${differences.map((d,i)=>`
-          <div data-i="${i}" 
-               style="position:absolute; left:${d.x}%; top:${d.y}%; width:40px; height:40px; transform:translate(-50%,-50%);"
-               class="diff-zone">
-          </div>
-        `).join("")}
-      </div>
-
-      <div class="spacer"></div>
-      <div class="kpi"><span>Found</span><strong id="diffKpi">0/3</strong></div>
-
-      <div class="spacer"></div>
-      ${backToLevelsBtn()}
-    </section>
-  `;
-
-  $$(".diff-zone").forEach((zone)=>{
-    zone.addEventListener("click", ()=>{
-      unlockAudioOnce();
-      const i = zone.dataset.i;
-      if(found.has(i)) return;
-
-      found.add(i);
-      playSfx("success");
-      zone.style.background = "rgba(132,139,121,0.5)";
-      zone.style.borderRadius = "50%";
-
-      $("#diffKpi").textContent = `${found.size}/3`;
-
-      if(found.size === differences.length){
-        toast("Bonus complete ✦ Extra love note unlocked!");
-        awardNote(levelIndex0);
-        completeLevel("L8");
-        saveState();
-      }
-    });
-  });
-
-  wireBackToLevels();
-}
-
